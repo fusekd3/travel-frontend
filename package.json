@@ -1,0 +1,38 @@
+{
+  "name": "ai-travel-planner",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^2.10.8",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@types/react-datepicker": "^6.2.0",
+    "axios": "^1.6.2",
+    "framer-motion": "^10.18.0",
+    "next": "^14.2.29",
+    "react": "^18.3.1",
+    "react-datepicker": "^4.25.0",
+    "react-dom": "^18.3.1",
+    "react-icons": "^4.12.0",
+    "react-kakao-maps-sdk": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.50",
+    "@types/react": "^18.3.21",
+    "@types/react-dom": "^18.3.7",
+    "eslint": "^8",
+    "eslint-config-next": "14.0.3",
+    "typescript": "^5"
+  },
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
