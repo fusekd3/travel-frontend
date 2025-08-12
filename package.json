@@ -18,7 +18,7 @@
     "framer-motion": "^10.16.16",
     "react-icons": "^4.12.0",
     "firebase": "^10.7.0",
-    "@types/firebase": "^3.2.1",
+    "@firebase/app-types": "^0.9.0",
     "react-datepicker": "^4.25.0",
     "@types/react-datepicker": "^4.19.4"
   },
