@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import {
   Box,
   Container,
@@ -36,6 +37,7 @@ interface Spot {
 }
 
 export default function SearchPage() {
+  const router = useRouter();
   const [selectedSido, setSelectedSido] = useState('');
   const [selectedSigungu, setSelectedSigungu] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -51,6 +53,119 @@ export default function SearchPage() {
     { value: '숙소', label: '숙소' },
     { value: '식당', label: '식당' },
   ];
+
+  // URL 파라미터 처리 및 자동 검색
+  useEffect(() => {
+    if (router.isReady) {
+      const { destination } = router.query;
+      
+      if (destination && typeof destination === 'string') {
+        // destination 파라미터가 있으면 해당 지역을 찾아서 자동 선택
+        const decodedDestination = decodeURIComponent(destination);
+        console.log('자동 선택할 여행지:', decodedDestination);
+        console.log('regions 데이터 확인:', regions);
+        console.log('regions 키 목록:', Object.keys(regions));
+        
+        let foundSido = '';
+        
+        // 지역명으로 시/도 찾기 (정확한 매칭 우선)
+        for (const [sido, sigunguList] of Object.entries(regions)) {
+          console.log('비교 중:', { 
+            sido, 
+            decodedDestination, 
+            'sido.includes(decodedDestination)': sido.includes(decodedDestination),
+            'decodedDestination.includes(sido)': decodedDestination.includes(sido)
+          });
+          
+          // 정확한 매칭 우선 (제주도 → 제주특별자치도)
+          if (decodedDestination === '제주도' && sido === '제주특별자치도') {
+            foundSido = sido;
+            console.log('제주도 정확 매칭:', { sido: foundSido });
+            break;
+          }
+          
+          // 일반적인 포함 관계 확인
+          if (sido.includes(decodedDestination) || decodedDestination.includes(sido)) {
+            foundSido = sido;
+            console.log('시/도에서 찾음:', { sido: foundSido });
+            break;
+          }
+          
+          // 시/군/구에서도 찾기
+          for (const sigungu of sigunguList) {
+            if (sigungu.includes(decodedDestination) || decodedDestination.includes(sigungu)) {
+              foundSido = sido;
+              console.log('시/군/구에서 찾음:', { sido: foundSido });
+              break;
+            }
+          }
+          
+          if (foundSido) break;
+        }
+        
+        // 찾은 지역 설정 (시/도만 선택, 시/군/구는 선택하지 않음)
+        if (foundSido) {
+          setSelectedSido(foundSido);
+          setSelectedSigungu(''); // 시/군/구는 빈 값으로 설정
+          console.log('최종 선택된 지역:', { sido: foundSido, sigungu: '' });
+          
+          // 자동으로 검색 실행 (검색어는 설정하지 않음) - foundSido 직접 전달
+          setTimeout(() => {
+            handleSearchWithSido(foundSido);
+          }, 500);
+        }
+      }
+    }
+  }, [router.isReady, router.query]);
+
+  const handleSearchWithSido = async (sido: string) => {
+    setLoading(true);
+    try {
+      // 실제 API 호출
+      const searchParams = new URLSearchParams();
+      searchParams.append('sido', sido);
+      if (selectedCategory) searchParams.append('category', selectedCategory);
+      if (searchKeyword) searchParams.append('keyword', searchKeyword);
+
+      const response = await fetch(`http://localhost:8000/api/search-spots?${searchParams.toString()}`);
+      
+      if (!response.ok) {
+        throw new Error('검색 요청에 실패했습니다.');
+      }
+
+      const data = await response.json();
+      setSpots(data.spots || []);
+      
+      if (data.spots && data.spots.length === 0) {
+        toast({
+          title: '검색 결과가 없습니다',
+          description: '다른 조건으로 검색해보세요.',
+          status: 'info',
+          duration: 3000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: '검색 완료',
+          description: `${data.spots?.length || 0}개의 여행지를 찾았습니다.`,
+          status: 'success',
+          duration: 2000,
+          isClosable: true,
+        });
+      }
+    } catch (error) {
+      console.error('검색 오류:', error);
+      toast({
+        title: '검색 중 오류가 발생했습니다',
+        description: '잠시 후 다시 시도해주세요.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearch = async () => {
     if (!selectedSido && !searchKeyword) {

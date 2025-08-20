@@ -33,7 +33,7 @@ import {
   MenuItem,
   IconButton,
 } from '@chakra-ui/react';
-import { FaMap, FaMapMarkerAlt, FaSync, FaLightbulb, FaEllipsisV, FaCalendar } from 'react-icons/fa';
+import { FaMap, FaMapMarkerAlt, FaSync, FaLightbulb, FaEllipsisV, FaCalendar, FaMoneyBillWave } from 'react-icons/fa';
 import KakaoMap from '../components/KakaoMap';
 import Header from '../components/Header';
 import { useAuth } from '../context/AuthContext';
@@ -98,7 +98,7 @@ export default function PlanPage() {
   const { user } = useAuth();
   
   // 추천 장소 모달 상태 추가
-  const [recommendedSpots, setRecommendedSpots] = useState<Spot[]>([]);
+  const [recommendedSpots, setRecommendedSpots] = useState<any[]>([]);
   const [recommendModalOpen, setRecommendModalOpen] = useState(false);
   const [currentSpotInfo, setCurrentSpotInfo] = useState<{
     type: string;
@@ -352,65 +352,264 @@ export default function PlanPage() {
     .filter((res, idx, arr) => arr.findIndex(r => r.name === res.name) === idx);
 
   return (
-    <Box minH="100vh" bg="gray.50">
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #EBF8FF, #E6FFFA, #FAF5FF)' }}>
       {/* Header */}
       <Header />
       
-      <Container maxW="container.lg" py={8} mt="60px">
-        <Box p={4} bg="white" borderRadius="2xl" boxShadow="2xl" mb={8}>
-          <Heading size="lg" mb={2} color="teal.700">{plan.destination} 여행 계획</Heading>
-          <Text color="gray.600" mb={2}>총 {plan.total_days}일 · 총 예상 비용: {plan.total_cost.toLocaleString()}원</Text>
-          {plan.recommendations && plan.recommendations.length > 0 && (
-            <Box mt={2}>
-              <Heading size="sm" mb={1} color="teal.500">추천 사항</Heading>
-              <VStack align="stretch">
-                {plan.recommendations.map((rec, idx) => (
-                  <Text key={idx}>• {rec}</Text>
-                ))}
+      <Container maxW="container.xl" py={8} mt="60px">
+        <Box 
+          p={8} 
+          bgGradient="linear(135deg, white 0%, blue.50 100%)"
+          borderRadius="3xl" 
+          boxShadow="0 25px 50px rgba(0,0,0,0.1)"
+          border="1px solid"
+          borderColor="blue.100"
+          mb={8}
+          position="relative"
+          overflow="hidden"
+          _before={{
+            content: '""',
+            position: 'absolute',
+            top: '0',
+            left: '0',
+            right: '0',
+            height: '4px',
+            background: 'linear-gradient(90deg, #38B2AC 0%, #3182CE 100%)',
+          }}
+        >
+          <VStack spacing={6} align="stretch">
+            <HStack spacing={4} align="center">
+              <Box
+                w={16}
+                h={16}
+                bgGradient="linear(135deg, teal.400, blue.500)"
+                borderRadius="2xl"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                color="white"
+                fontSize="2xl"
+                boxShadow="0 8px 25px rgba(56, 178, 172, 0.3)"
+              >
+                ✈️
+              </Box>
+              <VStack align="start" spacing={1}>
+                <Heading size="xl" color="teal.700" fontWeight="bold">
+                  {plan.destination} 여행 계획
+                </Heading>
+                <HStack spacing={6} color="gray.600">
+                  <HStack spacing={2}>
+                    <Icon as={FaCalendar} color="teal.500" />
+                    <Text fontWeight="medium">총 {plan.total_days}일</Text>
+                  </HStack>
+                  <HStack spacing={2}>
+                    <Icon as={FaMoneyBillWave} color="green.500" />
+                    <Text fontWeight="medium">총 예상 비용: {plan.total_cost.toLocaleString()}원</Text>
+                  </HStack>
+                </HStack>
               </VStack>
+            </HStack>
+            
+          {plan.recommendations && plan.recommendations.length > 0 && (
+              <Box 
+                p={4} 
+                bg="white" 
+                borderRadius="xl" 
+                border="1px solid"
+                borderColor="teal.100"
+                boxShadow="0 4px 15px rgba(0,0,0,0.05)"
+              >
+                <HStack spacing={2} mb={3}>
+                  <Icon as={FaLightbulb} color="teal.500" />
+                  <Heading size="sm" color="teal.600">AI 추천 사항</Heading>
+                </HStack>
+                <SimpleGrid columns={{ base: 1, md: 2 }} spacing={2}>
+                {plan.recommendations.map((rec, idx) => (
+                    <HStack key={idx} spacing={2}>
+                      <Box w={2} h={2} bg="teal.400" borderRadius="full" />
+                      <Text color="gray.700" fontSize="sm">{rec}</Text>
+                    </HStack>
+                ))}
+                </SimpleGrid>
             </Box>
           )}
+          </VStack>
         </Box>
-        <Box bg="white" borderRadius="2xl" boxShadow="lg" p={4}>
-          <Tabs colorScheme="teal" variant="enclosed" isFitted>
-            <TabList mb={4}>
-              <Tab fontWeight="bold">일정표</Tab>
-              <Tab fontWeight="bold">기본 정보</Tab>
+        <Box 
+          bg="white" 
+          borderRadius="3xl" 
+          boxShadow="0 20px 40px rgba(0,0,0,0.08)"
+          border="1px solid"
+          borderColor="gray.100"
+          overflow="hidden"
+        >
+          <Tabs colorScheme="teal" variant="unstyled">
+            <TabList 
+              bg="gray.50" 
+              p={2} 
+              borderRadius="2xl" 
+              mx={4} 
+              mt={4}
+              mb={6}
+            >
+              <Tab 
+                fontWeight="bold" 
+                borderRadius="xl"
+                _selected={{ 
+                  bg: "white", 
+                  color: "teal.600",
+                  boxShadow: "0 4px 15px rgba(0,0,0,0.1)"
+                }}
+                _hover={{ bg: "gray.100" }}
+                transition="all 0.2s"
+              >
+                📅 일정표
+              </Tab>
+              <Tab 
+                fontWeight="bold" 
+                borderRadius="xl"
+                _selected={{ 
+                  bg: "white", 
+                  color: "teal.600",
+                  boxShadow: "0 4px 15px rgba(0,0,0,0.1)"
+                }}
+                _hover={{ bg: "gray.100" }}
+                transition="all 0.2s"
+              >
+                ℹ️ 기본 정보
+              </Tab>
             </TabList>
             <TabPanels>
               {/* 일정표 탭 */}
               <TabPanel px={isMobile ? 0 : 4}>
-                <HStack spacing={2} mb={6} flexWrap="wrap">
+                <VStack spacing={6} align="stretch">
+                  <HStack spacing={3} mb={4} flexWrap="wrap" justify="center">
                   {plan.daily_plans.map((_, idx) => (
                     <Button
                       key={idx}
+                        size="lg"
                       colorScheme={selectedDay === idx ? 'teal' : 'gray'}
                       variant={selectedDay === idx ? 'solid' : 'outline'}
-                      borderRadius="full"
+                        borderRadius="2xl"
+                        px={6}
+                        py={3}
                       onClick={() => setSelectedDay(idx)}
-                    >
-                      {idx + 1}일차
+                        _hover={{
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+                        }}
+                        transition="all 0.3s ease"
+                        boxShadow={selectedDay === idx ? '0 8px 25px rgba(56, 178, 172, 0.3)' : 'none'}
+                      >
+                        <VStack spacing={1}>
+                          <Text fontSize="lg" fontWeight="bold">{idx + 1}일차</Text>
+                          <Text fontSize="xs" opacity={0.8}>Day {idx + 1}</Text>
+                        </VStack>
                     </Button>
                   ))}
+                  </HStack>
+                  
+                  <HStack justify="center" spacing={4}>
                   <Button
+                      size="lg"
                     colorScheme="teal"
                     variant="outline"
-                    borderRadius="full"
+                      borderRadius="2xl"
+                      px={8}
+                      py={3}
                     leftIcon={<FaMap />}
                     onClick={handleShowMap}
-                  >
-                    지도 보기
+                      _hover={{
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 8px 25px rgba(56, 178, 172, 0.2)',
+                        bg: 'teal.50'
+                      }}
+                      transition="all 0.3s ease"
+                      borderWidth="2px"
+                    >
+                      🗺️ 지도 보기
                   </Button>
                 </HStack>
-                <Box p={isMobile ? 2 : 6} bg="gray.50" borderRadius="xl" boxShadow="md">
-                  <Heading size="md" mb={4} color="teal.600">{selectedDay + 1}일차 일정</Heading>
+                </VStack>
+                <Box 
+                  p={isMobile ? 4 : 8} 
+                  bgGradient="linear(135deg, white 0%, gray.50 100%)"
+                  borderRadius="3xl" 
+                  boxShadow="0 15px 35px rgba(0,0,0,0.08)"
+                  border="1px solid"
+                  borderColor="gray.100"
+                  position="relative"
+                  overflow="hidden"
+                  _before={{
+                    content: '""',
+                    position: 'absolute',
+                    top: '0',
+                    left: '0',
+                    right: '0',
+                    height: '3px',
+                    background: 'linear-gradient(90deg, #38B2AC 0%, #3182CE 100%)',
+                  }}
+                >
+                  <VStack spacing={6} align="stretch">
+                    <HStack spacing={4} align="center" justify="center">
+                      <Box
+                        w={12}
+                        h={12}
+                        bgGradient="linear(135deg, teal.400, blue.500)"
+                        borderRadius="xl"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        color="white"
+                        fontSize="xl"
+                        boxShadow="0 6px 20px rgba(56, 178, 172, 0.3)"
+                      >
+                        📅
+                      </Box>
+                      <VStack align="start" spacing={1}>
+                        <Heading size="lg" color="teal.700" fontWeight="bold">
+                          {selectedDay + 1}일차 일정
+                        </Heading>
+                        <Text color="gray.600" fontSize="sm">
+                          오늘의 여행 계획을 확인하세요
+                        </Text>
+                      </VStack>
+                    </HStack>
                   <VStack align="stretch" spacing={4}>
                     {(() => {
                       const day = plan.daily_plans[selectedDay];
                       if (!day) {
                         return (
-                          <Box p={4} bg="gray.100" borderRadius="xl" textAlign="center" color="gray.500">
-                            오늘은 추천 일정이 없습니다. 다른 날짜를 선택해 보세요!
+                          <Box 
+                            p={8} 
+                            bgGradient="linear(135deg, gray.50 0%, blue.50 100%)"
+                            borderRadius="2xl" 
+                            textAlign="center" 
+                            color="gray.600"
+                            border="2px dashed"
+                            borderColor="gray.300"
+                            boxShadow="0 4px 15px rgba(0,0,0,0.05)"
+                          >
+                            <VStack spacing={4}>
+                              <Box
+                                w={16}
+                                h={16}
+                                bgGradient="linear(135deg, gray.400, blue.500)"
+                                borderRadius="2xl"
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="center"
+                                color="white"
+                                fontSize="2xl"
+                                boxShadow="0 6px 20px rgba(0,0,0,0.1)"
+                              >
+                                📅
+                              </Box>
+                              <VStack spacing={2}>
+                                <Text fontSize="lg" fontWeight="bold">오늘은 추천 일정이 없습니다</Text>
+                                <Text fontSize="sm" opacity={0.8}>다른 날짜를 선택해 보세요!</Text>
+                              </VStack>
+                            </VStack>
                           </Box>
                         );
                       }
@@ -429,8 +628,36 @@ export default function PlanPage() {
                       const hasAccommodation = day.accommodation?.name;
                       if (spots.length === 0 && !hasAccommodation) {
                         return (
-                          <Box p={4} bg="gray.100" borderRadius="xl" textAlign="center" color="gray.500">
-                            오늘은 추천 일정이 없습니다. 다른 날짜를 선택해 보세요!
+                          <Box 
+                            p={8} 
+                            bgGradient="linear(135deg, gray.50 0%, blue.50 100%)"
+                            borderRadius="2xl" 
+                            textAlign="center" 
+                            color="gray.600"
+                            border="2px dashed"
+                            borderColor="gray.300"
+                            boxShadow="0 4px 15px rgba(0,0,0,0.05)"
+                          >
+                            <VStack spacing={4}>
+                              <Box
+                                w={16}
+                                h={16}
+                                bgGradient="linear(135deg, gray.400, blue.500)"
+                                borderRadius="2xl"
+                                display="flex"
+                                alignItems="center"
+                                justifyContent="center"
+                                color="white"
+                                fontSize="2xl"
+                                boxShadow="0 6px 20px rgba(0,0,0,0.1)"
+                              >
+                                📅
+                              </Box>
+                              <VStack spacing={2}>
+                                <Text fontSize="lg" fontWeight="bold">오늘은 추천 일정이 없습니다</Text>
+                                <Text fontSize="sm" opacity={0.8}>다른 날짜를 선택해 보세요!</Text>
+                              </VStack>
+                            </VStack>
                           </Box>
                         );
                       }
@@ -438,9 +665,56 @@ export default function PlanPage() {
                       // 숙소 표시 (더 안전한 조건)
                       if (day.accommodation && (day.accommodation.name || day.accommodation.id)) {
                         cards.push(
-                          <Box key="accommodation" p={4} bg="teal.100" borderRadius="xl" boxShadow="sm" mb={2}>
-                            <HStack justify="space-between" align="flex-start" mb={2}>
-                              <Text fontWeight="bold" fontSize="md" color="teal.700">🏨 숙소</Text>
+                          <Box 
+                            key={`${selectedDay}-accommodation-${day.accommodation?.id || day.accommodation?.name || 'default'}`}
+                            p={6} 
+                            bgGradient="linear(135deg, teal.50 0%, blue.50 100%)"
+                            borderRadius="2xl" 
+                            boxShadow="0 10px 25px rgba(56, 178, 172, 0.15)"
+                            border="2px solid"
+                            borderColor="teal.200"
+                            mb={4}
+                            position="relative"
+                            overflow="hidden"
+                            _hover={{
+                              transform: 'translateY(-4px)',
+                              boxShadow: '0 20px 40px rgba(56, 178, 172, 0.25)',
+                            }}
+                            transition="all 0.3s ease"
+                            _before={{
+                              content: '""',
+                              position: 'absolute',
+                              top: '0',
+                              left: '0',
+                              right: '0',
+                              height: '3px',
+                              background: 'linear-gradient(90deg, #38B2AC 0%, #3182CE 100%)',
+                            }}
+                          >
+                            <VStack spacing={4} align="stretch">
+                              <HStack justify="space-between" align="flex-start">
+                                <HStack spacing={3}>
+                                  <Box
+                                    w={12}
+                                    h={12}
+                                    bgGradient="linear(135deg, teal.400, blue.500)"
+                                    borderRadius="xl"
+                                    display="flex"
+                                    alignItems="center"
+                                    justifyContent="center"
+                                    color="white"
+                                    fontSize="xl"
+                                    boxShadow="0 4px 15px rgba(56, 178, 172, 0.3)"
+                                  >
+                                    🏨
+                                  </Box>
+                                  <VStack align="start" spacing={1}>
+                                    <Text fontWeight="bold" fontSize="lg" color="teal.700">숙소</Text>
+                                    <Text color="teal.600" fontSize="sm" fontWeight="medium">
+                                      {day.accommodation.name || '숙소명 없음'}
+                                    </Text>
+                                  </VStack>
+                                </HStack>
                               <HStack spacing={2}>
                                 <Button
                                   size="sm"
@@ -481,27 +755,173 @@ export default function PlanPage() {
                             <Text color="gray.700">{day.accommodation.name || '숙소명 없음'}</Text>
                             <Text color="gray.700">🕒 <b>체크인/체크아웃:</b> {day.accommodation.time || '정보 없음'}</Text>
                             <Text color="gray.700">📍 <b>주소:</b> {day.accommodation.address || '정보 없음'}</Text>
-                            <Text color="gray.700">�� <b>숙박비:</b> {(day.accommodation.price || 0).toLocaleString()}원</Text>
+                            <Text color="gray.700">�� <b>숙박비:</b> {(day.accommodation.price || 0).toLocaleString()}</Text>
                             <Text color="gray.700">☎️ <b>전화번호:</b> {day.accommodation.tel || '정보 없음'}</Text>
                             <Text color="gray.700">🔗 <b>홈페이지:</b> {day.accommodation.homepage || '정보 없음'}</Text>
+                            </VStack>
                           </Box>
                         );
                       } else {
                       }
-                      cards.push(...spots.map((spot: Spot, spotIdx: number) => (
-                        <Box key={spotIdx} p={4} bg="white" borderRadius="xl" boxShadow="sm" mb={2}>
-                          <HStack align="flex-start" spacing={4}>
-                            {spot.image_url && <Image src={spot.image_url} alt={spot.name} boxSize="80px" objectFit="cover" borderRadius="md" />}
-                            <Box flex={1}>
-                              <HStack justify="space-between" align="flex-start" mb={2}>
-                                <Text fontWeight="bold" fontSize="lg" color="teal.700">{spot.name || '이름 없음'}</Text>
+                      cards.push(...spots.map((spot: Spot, spotIdx: number) => {
+                        // 카테고리별 색상과 아이콘 설정
+                        const getCategoryStyle = (category: string) => {
+                          switch (category) {
+                            case '식당':
+                              return {
+                                bg: 'linear-gradient(135deg, orange.50 0%, red.50 100%)',
+                                borderColor: 'orange.200',
+                                icon: '🍽️',
+                                iconBg: 'linear-gradient(135deg, orange.400, red.500)',
+                                dotColor: 'orange.400',
+                                titleColor: 'orange.700'
+                              };
+                            case '문화':
+                              return {
+                                bg: 'linear-gradient(135deg, purple.50 0%, pink.50 100%)',
+                                borderColor: 'purple.200',
+                                icon: '🎭',
+                                iconBg: 'linear-gradient(135deg, purple.400, pink.500)',
+                                dotColor: 'purple.400',
+                                titleColor: 'purple.700'
+                              };
+                            case '자연':
+                              return {
+                                bg: 'linear-gradient(135deg, green.50 0%, teal.50 100%)',
+                                borderColor: 'green.200',
+                                icon: '🌿',
+                                iconBg: 'linear-gradient(135deg, green.400, teal.500)',
+                                dotColor: 'green.400',
+                                titleColor: 'green.700'
+                              };
+                            case '쇼핑':
+                              return {
+                                bg: 'linear-gradient(135deg, pink.50 0%, purple.50 100%)',
+                                borderColor: 'pink.200',
+                                icon: '🛍️',
+                                iconBg: 'linear-gradient(135deg, pink.400, purple.500)',
+                                dotColor: 'pink.400',
+                                titleColor: 'pink.700'
+                              };
+                            case '액티비티':
+                              return {
+                                bg: 'linear-gradient(135deg, blue.50 0%, indigo.50 100%)',
+                                borderColor: 'blue.200',
+                                icon: '🏃',
+                                iconBg: 'linear-gradient(135deg, blue.400, indigo.500)',
+                                dotColor: 'blue.400',
+                                titleColor: 'blue.700'
+                              };
+                            case '휴식':
+                              return {
+                                bg: 'linear-gradient(135deg, yellow.50 0%, orange.50 100%)',
+                                borderColor: 'yellow.200',
+                                icon: '🧘',
+                                iconBg: 'linear-gradient(135deg, yellow.400, orange.500)',
+                                dotColor: 'yellow.400',
+                                titleColor: 'yellow.700'
+                              };
+                            default:
+                              return {
+                                bg: 'linear-gradient(135deg, gray.50 0%, blue.50 100%)',
+                                borderColor: 'gray.200',
+                                icon: '📍',
+                                iconBg: 'linear-gradient(135deg, gray.400, blue.500)',
+                                dotColor: 'gray.400',
+                                titleColor: 'gray.700'
+                              };
+                          }
+                        };
+                        
+                        const style = getCategoryStyle(spot.category);
+                        
+                        return (
+                          <Box 
+                            key={`${selectedDay}-${spotIdx}-${spot.id || spot.name}`}
+                            p={6} 
+                            bgGradient={style.bg}
+                            borderRadius="2xl" 
+                            boxShadow="0 10px 25px rgba(0,0,0,0.08)"
+                            border="2px solid"
+                            borderColor={style.borderColor}
+                            mb={4}
+                            position="relative"
+                            overflow="hidden"
+                            _hover={{
+                              transform: 'translateY(-4px)',
+                              boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+                            }}
+                            transition="all 0.3s ease"
+                            _before={{
+                              content: '""',
+                              position: 'absolute',
+                              top: '0',
+                              left: '0',
+                              right: '0',
+                              height: '3px',
+                              background: style.iconBg,
+                            }}
+                          >
+                            <VStack spacing={4} align="stretch">
+                              <HStack justify="space-between" align="flex-start">
+                                <HStack spacing={4} align="flex-start">
+                                  {spot.image_url && (
+                                    <Image 
+                                      src={spot.image_url} 
+                                      alt={spot.name} 
+                                      boxSize="80px" 
+                                      objectFit="cover" 
+                                      borderRadius="xl"
+                                      boxShadow="0 4px 15px rgba(0,0,0,0.1)"
+                                    />
+                                  )}
+                                  <VStack align="start" spacing={2} flex={1}>
+                                    <HStack spacing={3} align="center">
+                                      <Box
+                                        w={10}
+                                        h={10}
+                                        bgGradient={style.iconBg}
+                                        borderRadius="lg"
+                                        display="flex"
+                                        alignItems="center"
+                                        justifyContent="center"
+                                        color="white"
+                                        fontSize="lg"
+                                        boxShadow="0 4px 15px rgba(0,0,0,0.2)"
+                                      >
+                                        {style.icon}
+                                      </Box>
+                                      <VStack align="start" spacing={1}>
+                                        <Text fontWeight="bold" fontSize="lg" color={style.titleColor}>
+                                          {spot.name || '이름 없음'}
+                                        </Text>
+                                        <Badge 
+                                          colorScheme={spot.category === '식당' ? 'orange' : 'teal'} 
+                                          variant="subtle" 
+                                          borderRadius="full"
+                                          px={3}
+                                          py={1}
+                                        >
+                                          {spot.category || '기타'}
+                                        </Badge>
+                                      </VStack>
+                                    </HStack>
+                                    {spot.description && (
+                                      <Text color="gray.600" fontSize="sm" lineHeight="1.5">
+                                        {spot.description}
+                                      </Text>
+                                    )}
+                                  </VStack>
+                                </HStack>
                                 <Menu>
                                   <MenuButton
                                     as={IconButton}
                                     icon={<FaEllipsisV />}
                                     variant="ghost"
                                     size="sm"
-                                    color="teal.600"
+                                    color={style.titleColor}
+                                    borderRadius="lg"
+                                    _hover={{ bg: 'whiteAlpha.300' }}
                                   />
                                   <MenuList>
                                     <MenuItem 
@@ -519,28 +939,72 @@ export default function PlanPage() {
                                   </MenuList>
                                 </Menu>
                               </HStack>
-                              <Text color="gray.600" mb={1}>{spot.description || '설명 없음'}</Text>
-                              <SimpleGrid columns={{ base: 1, sm: 2 }} spacing={1} fontSize="sm" color="gray.700">
-                                <Text>🕒 <b>시간:</b> {spot.time || '정보 없음'}</Text>
-                                <Text>📍 <b>주소:</b> {spot.address || '정보 없음'}</Text>
-                                <Text>💡 <b>카테고리:</b> {spot.category || '정보 없음'}</Text>
-                                <Text>⏰ <b>운영시간:</b> {spot.open_time || '정보 없음'}</Text>
-                                <Text>🚫 <b>휴무일:</b> {spot.closed_days || '정보 없음'}</Text>
-                                <Text>💰 <b>예상 비용:</b> {(spot.price || 0).toLocaleString()}원</Text>
-                                <Text>☎️ <b>전화번호:</b> {spot.tel || '정보 없음'}</Text>
-                                <Text>🔗 <b>홈페이지:</b> {spot.homepage || '정보 없음'}</Text>
-                                <Text>🅿️ <b>주차:</b> {spot.parking || '정보 없음'}</Text>
-                                <Text>🏢 <b>시설:</b> {spot.facilities || '정보 없음'}</Text>
-                                <Text>🔖 <b>콘텐츠타입:</b> {spot.content_type || '정보 없음'}</Text>
+                              
+                              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3} fontSize="sm">
+                                {spot.time && (
+                                  <HStack spacing={2}>
+                                    <Box w={2} h={2} bg={style.dotColor} borderRadius="full" />
+                                    <Text color="gray.700">🕒 <b>시간:</b> {spot.time}</Text>
+                                  </HStack>
+                                )}
+                                {spot.address && (
+                                  <HStack spacing={2}>
+                                    <Box w={2} h={2} bg={style.dotColor} borderRadius="full" />
+                                    <Text color="gray.700">📍 <b>주소:</b> {spot.address}</Text>
+                                  </HStack>
+                                )}
+                                {spot.open_time && (
+                                  <HStack spacing={2}>
+                                    <Box w={2} h={2} bg={style.dotColor} borderRadius="full" />
+                                    <Text color="gray.700">⏰ <b>운영시간:</b> {spot.open_time}</Text>
+                                  </HStack>
+                                )}
+                                {spot.closed_days && (
+                                  <HStack spacing={2}>
+                                    <Box w={2} h={2} bg={style.dotColor} borderRadius="full" />
+                                    <Text color="gray.700">🚫 <b>휴무일:</b> {spot.closed_days}</Text>
+                                  </HStack>
+                                )}
+                                {spot.price && (
+                                  <HStack spacing={2}>
+                                    <Box w={2} h={2} bg={style.dotColor} borderRadius="full" />
+                                    <Text color="gray.700">💰 <b>예상 비용:</b> {spot.price.toLocaleString()}원</Text>
+                                  </HStack>
+                                )}
+                                {spot.tel && (
+                                  <HStack spacing={2}>
+                                    <Box w={2} h={2} bg={style.dotColor} borderRadius="full" />
+                                    <Text color="gray.700">☎️ <b>전화번호:</b> {spot.tel}</Text>
+                                  </HStack>
+                                )}
+                                {spot.homepage && (
+                                  <HStack spacing={2}>
+                                    <Box w={2} h={2} bg={style.dotColor} borderRadius="full" />
+                                    <Text color="gray.700">🔗 <b>홈페이지:</b> {spot.homepage}</Text>
+                                  </HStack>
+                                )}
+                                {spot.parking && (
+                                  <HStack spacing={2}>
+                                    <Box w={2} h={2} bg={style.dotColor} borderRadius="full" />
+                                    <Text color="gray.700">🅿️ <b>주차:</b> {spot.parking}</Text>
+                                  </HStack>
+                                )}
+                                {spot.facilities && (
+                                  <HStack spacing={2}>
+                                    <Box w={2} h={2} bg={style.dotColor} borderRadius="full" />
+                                    <Text color="gray.700">🏢 <b>시설:</b> {spot.facilities}</Text>
+                                  </HStack>
+                                )}
                               </SimpleGrid>
-                            </Box>
-                          </HStack>
-                        </Box>
-                      )));
+                            </VStack>
+                          </Box>
+                        );
+                      }));
                       return cards;
                     })()}
                     <Text><strong>교통:</strong> {plan.daily_plans[selectedDay]?.transportation || '정보 없음'}</Text>
                     <Text><strong>식사:</strong> {plan.daily_plans[selectedDay]?.meals?.join(', ') || '정보 없음'}</Text>
+                  </VStack>
                   </VStack>
                 </Box>
               </TabPanel>
@@ -552,7 +1016,7 @@ export default function PlanPage() {
                     <Box key={idx} p={4} bg="white" borderRadius="xl" boxShadow="md">
                       <Text fontWeight="bold" fontSize="lg" color="teal.700">{acc.name || '이름 없음'}</Text>
                       <Text color="gray.700">📍 <b>주소:</b> {acc.address || '정보 없음'}</Text>
-                      <Text color="gray.700">💰 <b>숙박비:</b> {(acc.price || 0).toLocaleString()}원</Text>
+                      <Text color="gray.700">💰 <b>숙박비:</b> {(acc.price || 0).toLocaleString()}</Text>
                       <Text color="gray.700">🕒 <b>체크인:</b> {acc.check_in || '정보 없음'}</Text>
                       <Text color="gray.700">�� <b>체크아웃:</b> {acc.check_out || '정보 없음'}</Text>
                     </Box>
@@ -564,7 +1028,7 @@ export default function PlanPage() {
                     <Box key={idx} p={4} bg="white" borderRadius="xl" boxShadow="md">
                       <Text fontWeight="bold" fontSize="lg" color="teal.700">{res.name || '이름 없음'}</Text>
                       <Text color="gray.700">📍 <b>주소:</b> {res.address || '정보 없음'}</Text>
-                      <Text color="gray.700">💰 <b>예상 비용:</b> {(res.price || 0).toLocaleString()}원</Text>
+                      <Text color="gray.700">💰 <b>예상 비용:</b> {(res.price || 0).toLocaleString()}</Text>
                       <Text color="gray.700">⏰ <b>운영시간:</b> {res.open_time || '정보 없음'}</Text>
                       <Text color="gray.700">☎️ <b>전화번호:</b> {res.tel || '정보 없음'}</Text>
                     </Box>
@@ -716,6 +1180,6 @@ export default function PlanPage() {
           </ModalContent>
         </Modal>
       </Container>
-    </Box>
+    </div>
   );
 } 

@@ -9,9 +9,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <ChakraProvider>
       <AuthProvider>
         <Header />
-        <div style={{ paddingTop: 64 }}>
-          <Component {...pageProps} />
-        </div>
+        <Component {...pageProps} />
       </AuthProvider>
     </ChakraProvider>
   );
