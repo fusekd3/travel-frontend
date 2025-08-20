@@ -23,13 +23,8 @@ import {
   Icon,
   Divider,
   Link,
-  Wrap,
-  WrapItem,
-  Spinner,
 } from '@chakra-ui/react';
 import { FaHeadset, FaQuestionCircle, FaEnvelope, FaPhone, FaClock, FaMapMarkerAlt, FaChevronDown } from 'react-icons/fa';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebase';
 
 interface FAQ {
   id: number;
@@ -45,24 +40,15 @@ interface ContactInfo {
   description: string;
 }
 
-interface InquiryForm {
-  name: string;
-  email: string;
-  category: string;
-  subject: string;
-  message: string;
-}
-
 export default function CustomerServicePage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [inquiryForm, setInquiryForm] = useState<InquiryForm>({
+  const [inquiryForm, setInquiryForm] = useState({
     name: '',
     email: '',
     category: '',
     subject: '',
     message: '',
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const toast = useToast();
 
   const categories = [
@@ -151,8 +137,7 @@ export default function CustomerServicePage() {
     },
   ];
 
-  const handleInquirySubmit = async () => {
-    // 입력 검증
+  const handleInquirySubmit = () => {
     if (!inquiryForm.name || !inquiryForm.email || !inquiryForm.subject || !inquiryForm.message) {
       toast({
         title: '입력 오류',
@@ -164,61 +149,21 @@ export default function CustomerServicePage() {
       return;
     }
 
-    // 이메일 형식 검증
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(inquiryForm.email)) {
-      toast({
-        title: '이메일 형식 오류',
-        description: '올바른 이메일 주소를 입력해주세요.',
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-      return;
-    }
+    toast({
+      title: '문의 접수 완료',
+      description: '빠른 시일 내에 답변드리겠습니다.',
+      status: 'success',
+      duration: 3000,
+      isClosable: true,
+    });
 
-    setIsSubmitting(true);
-
-    try {
-      // Firebase Firestore에 문의 데이터 저장
-      const inquiryData = {
-        ...inquiryForm,
-        createdAt: serverTimestamp(),
-        status: 'pending',
-        read: false,
-      };
-
-      const docRef = await addDoc(collection(db, 'inquiries'), inquiryData);
-
-      toast({
-        title: '문의 접수 완료!',
-        description: `문의번호: ${docRef.id.slice(-8).toUpperCase()}. 빠른 시일 내에 답변드리겠습니다.`,
-        status: 'success',
-        duration: 5000,
-        isClosable: true,
-      });
-
-      // 폼 초기화
-      setInquiryForm({
-        name: '',
-        email: '',
-        category: '',
-        subject: '',
-        message: '',
-      });
-
-    } catch (error) {
-      console.error('문의 접수 오류:', error);
-      toast({
-        title: '문의 접수 실패',
-        description: '일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true,
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    setInquiryForm({
+      name: '',
+      email: '',
+      category: '',
+      subject: '',
+      message: '',
+    });
   };
 
   const filteredFaqs = selectedCategory === 'all' 
@@ -226,46 +171,45 @@ export default function CustomerServicePage() {
     : faqs.filter(faq => faq.category === selectedCategory);
 
   return (
-    <Container maxW="container.lg" py={{ base: 20, md: 8 }} px={{ base: 4, md: 6 }}>
-      <VStack spacing={{ base: 6, md: 8 }} align="stretch">
+    <Container maxW="container.lg" py={8}>
+      <VStack spacing={8} align="stretch">
         {/* 헤더 섹션 */}
-        <Box bg="white" borderRadius="2xl" boxShadow="lg" p={{ base: 4, md: 6 }}>
+        <Box bg="white" borderRadius="2xl" boxShadow="lg" p={6}>
           <VStack spacing={4}>
             <HStack>
-              <Icon as={FaHeadset} w={{ base: 6, md: 8 }} h={{ base: 6, md: 8 }} color="teal.500" />
-              <Heading size={{ base: "md", md: "lg" }} color="teal.700">고객센터</Heading>
+              <Icon as={FaHeadset} w={8} h={8} color="teal.500" />
+              <Heading size="lg" color="teal.700">고객센터</Heading>
             </HStack>
-            <Text color="gray.600" textAlign="center" fontSize={{ base: "sm", md: "md" }}>
+            <Text color="gray.600" textAlign="center">
               AI 여행 서비스 이용에 궁금한 점이 있으시면 언제든 문의해주세요!
             </Text>
           </VStack>
         </Box>
 
         {/* 연락처 정보 */}
-        <Box bg="white" borderRadius="2xl" boxShadow="lg" p={{ base: 4, md: 6 }}>
-          <Heading size={{ base: "sm", md: "md" }} mb={6} color="teal.700">연락처 정보</Heading>
-          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={{ base: 4, md: 6 }}>
+        <Box bg="white" borderRadius="2xl" boxShadow="lg" p={6}>
+          <Heading size="md" mb={6} color="teal.700">연락처 정보</Heading>
+          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
             {contactInfo.map((contact, index) => (
               <Box
                 key={index}
-                p={{ base: 3, md: 4 }}
+                p={4}
                 border="1px"
                 borderColor="gray.200"
                 borderRadius="xl"
                 _hover={{ borderColor: 'teal.300', transform: 'translateY(-2px)' }}
                 transition="all 0.2s"
-                cursor="pointer"
               >
                 <HStack spacing={3}>
-                  <Icon as={contact.icon} w={{ base: 5, md: 6 }} h={{ base: 5, md: 6 }} color="teal.500" />
-                  <VStack align="start" spacing={1} flex={1}>
-                    <Text fontWeight="bold" color="teal.700" fontSize={{ base: "sm", md: "md" }}>
+                  <Icon as={contact.icon} w={6} h={6} color="teal.500" />
+                  <VStack align="start" spacing={1}>
+                    <Text fontWeight="bold" color="teal.700">
                       {contact.type}
                     </Text>
-                    <Text fontSize={{ base: "md", md: "lg" }} color="gray.800" wordBreak="break-all">
+                    <Text fontSize="lg" color="gray.800">
                       {contact.value}
                     </Text>
-                    <Text fontSize={{ base: "xs", md: "sm" }} color="gray.600">
+                    <Text fontSize="sm" color="gray.600">
                       {contact.description}
                     </Text>
                   </VStack>
@@ -276,44 +220,35 @@ export default function CustomerServicePage() {
         </Box>
 
         {/* FAQ 섹션 */}
-        <Box bg="white" borderRadius="2xl" boxShadow="lg" p={{ base: 4, md: 6 }}>
+        <Box bg="white" borderRadius="2xl" boxShadow="lg" p={6}>
           <VStack spacing={6} align="stretch">
-            <VStack spacing={4} align="stretch">
-              <Heading size={{ base: "sm", md: "md" }} color="teal.700">자주 묻는 질문</Heading>
-              
-              {/* 모바일에서는 세로로, 데스크톱에서는 가로로 배치 */}
-              <Wrap spacing={2} justify={{ base: "center", md: "flex-start" }}>
+            <HStack justify="space-between" align="center">
+              <Heading size="md" color="teal.700">자주 묻는 질문</Heading>
+              <HStack spacing={2}>
                 {categories.map((category) => (
-                  <WrapItem key={category.value}>
-                    <Button
-                      variant={selectedCategory === category.value ? 'solid' : 'outline'}
-                      colorScheme="teal"
-                      size={{ base: "sm", md: "sm" }}
-                      onClick={() => setSelectedCategory(category.value)}
-                      minW={{ base: "auto", md: "auto" }}
-                      px={{ base: 3, md: 4 }}
-                    >
-                      {category.label}
-                    </Button>
-                  </WrapItem>
+                  <Button
+                    key={category.value}
+                    variant={selectedCategory === category.value ? 'solid' : 'outline'}
+                    colorScheme="teal"
+                    size="sm"
+                    onClick={() => setSelectedCategory(category.value)}
+                  >
+                    {category.label}
+                  </Button>
                 ))}
-              </Wrap>
-            </VStack>
+              </HStack>
+            </HStack>
 
             <Accordion allowToggle>
               {filteredFaqs.map((faq) => (
                 <AccordionItem key={faq.id} border="1px" borderColor="gray.200" borderRadius="lg" mb={2}>
-                  <AccordionButton 
-                    py={{ base: 3, md: 4 }} 
-                    _hover={{ bg: 'gray.50' }}
-                    minH={{ base: "48px", md: "auto" }}
-                  >
-                    <Box flex="1" textAlign="left" fontWeight="medium" color="teal.700" fontSize={{ base: "sm", md: "md" }}>
+                  <AccordionButton py={4} _hover={{ bg: 'gray.50' }}>
+                    <Box flex="1" textAlign="left" fontWeight="medium" color="teal.700">
                       {faq.question}
                     </Box>
                     <AccordionIcon />
                   </AccordionButton>
-                  <AccordionPanel pb={4} color="gray.700" fontSize={{ base: "sm", md: "md" }}>
+                  <AccordionPanel pb={4} color="gray.700">
                     {faq.answer}
                   </AccordionPanel>
                 </AccordionItem>
@@ -323,43 +258,37 @@ export default function CustomerServicePage() {
         </Box>
 
         {/* 문의하기 폼 */}
-        <Box bg="white" borderRadius="2xl" boxShadow="lg" p={{ base: 4, md: 6 }}>
-          <Heading size={{ base: "sm", md: "md" }} mb={6} color="teal.700">1:1 문의하기</Heading>
+        <Box bg="white" borderRadius="2xl" boxShadow="lg" p={6}>
+          <Heading size="md" mb={6} color="teal.700">1:1 문의하기</Heading>
           
           <VStack spacing={4} align="stretch">
             <SimpleGrid columns={{ base: 1, md: 2 }} spacing={4}>
               <FormControl isRequired>
-                <FormLabel fontSize={{ base: "sm", md: "md" }}>이름</FormLabel>
+                <FormLabel>이름</FormLabel>
                 <Input
                   placeholder="이름을 입력하세요"
                   value={inquiryForm.name}
                   onChange={(e) => setInquiryForm({ ...inquiryForm, name: e.target.value })}
-                  size={{ base: "md", md: "md" }}
-                  isDisabled={isSubmitting}
                 />
               </FormControl>
               
               <FormControl isRequired>
-                <FormLabel fontSize={{ base: "sm", md: "md" }}>이메일</FormLabel>
+                <FormLabel>이메일</FormLabel>
                 <Input
                   type="email"
                   placeholder="이메일을 입력하세요"
                   value={inquiryForm.email}
                   onChange={(e) => setInquiryForm({ ...inquiryForm, email: e.target.value })}
-                  size={{ base: "md", md: "md" }}
-                  isDisabled={isSubmitting}
                 />
               </FormControl>
             </SimpleGrid>
 
             <FormControl>
-              <FormLabel fontSize={{ base: "sm", md: "md" }}>문의 유형</FormLabel>
+              <FormLabel>문의 유형</FormLabel>
               <Select
                 placeholder="문의 유형을 선택하세요"
                 value={inquiryForm.category}
                 onChange={(e) => setInquiryForm({ ...inquiryForm, category: e.target.value })}
-                size={{ base: "md", md: "md" }}
-                isDisabled={isSubmitting}
               >
                 <option value="service">서비스 이용</option>
                 <option value="payment">결제/환불</option>
@@ -370,57 +299,48 @@ export default function CustomerServicePage() {
             </FormControl>
 
             <FormControl isRequired>
-              <FormLabel fontSize={{ base: "sm", md: "md" }}>제목</FormLabel>
+              <FormLabel>제목</FormLabel>
               <Input
                 placeholder="문의 제목을 입력하세요"
                 value={inquiryForm.subject}
                 onChange={(e) => setInquiryForm({ ...inquiryForm, subject: e.target.value })}
-                size={{ base: "md", md: "md" }}
-                isDisabled={isSubmitting}
               />
             </FormControl>
 
             <FormControl isRequired>
-              <FormLabel fontSize={{ base: "sm", md: "md" }}>문의 내용</FormLabel>
+              <FormLabel>문의 내용</FormLabel>
               <Textarea
                 placeholder="문의 내용을 자세히 입력해주세요"
                 rows={6}
                 value={inquiryForm.message}
                 onChange={(e) => setInquiryForm({ ...inquiryForm, message: e.target.value })}
-                size={{ base: "md", md: "md" }}
-                minH={{ base: "120px", md: "150px" }}
-                isDisabled={isSubmitting}
               />
-              <FormHelperText fontSize={{ base: "xs", md: "sm" }}>
+              <FormHelperText>
                 구체적인 내용을 작성해주시면 더 정확한 답변을 드릴 수 있습니다.
               </FormHelperText>
             </FormControl>
 
             <Button
               colorScheme="teal"
-              size={{ base: "lg", md: "lg" }}
+              size="lg"
               onClick={handleInquirySubmit}
-              leftIcon={isSubmitting ? <Spinner size="sm" /> : <FaEnvelope />}
-              w="full"
-              isLoading={isSubmitting}
-              loadingText="문의 접수 중..."
-              isDisabled={isSubmitting}
+              leftIcon={<FaEnvelope />}
             >
-              {isSubmitting ? '문의 접수 중...' : '문의하기'}
+              문의하기
             </Button>
           </VStack>
         </Box>
 
         {/* 운영 시간 안내 */}
-        <Box bg="white" borderRadius="2xl" boxShadow="lg" p={{ base: 4, md: 6 }}>
-          <Heading size={{ base: "sm", md: "md" }} mb={4} color="teal.700">운영 시간</Heading>
-          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={{ base: 4, md: 6 }}>
+        <Box bg="white" borderRadius="2xl" boxShadow="lg" p={6}>
+          <Heading size="md" mb={4} color="teal.700">운영 시간</Heading>
+          <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
             <VStack align="stretch" spacing={3}>
               <HStack>
                 <Icon as={FaClock} color="teal" />
-                <Text fontWeight="bold" fontSize={{ base: "sm", md: "md" }}>고객센터 운영시간</Text>
+                <Text fontWeight="bold">고객센터 운영시간</Text>
               </HStack>
-              <Text fontSize={{ base: "xs", md: "sm" }} color="gray.600" pl={6}>
+              <Text fontSize="sm" color="gray.600" pl={6}>
                 평일: 09:00 - 18:00<br />
                 토요일: 09:00 - 13:00<br />
                 일요일 및 공휴일 휴무
@@ -430,9 +350,9 @@ export default function CustomerServicePage() {
             <VStack align="stretch" spacing={3}>
               <HStack>
                 <Icon as={FaEnvelope} color="teal" />
-                <Text fontWeight="bold" fontSize={{ base: "sm", md: "md" }}>이메일 문의</Text>
+                <Text fontWeight="bold">이메일 문의</Text>
               </HStack>
-              <Text fontSize={{ base: "xs", md: "sm" }} color="gray.600" pl={6}>
+              <Text fontSize="sm" color="gray.600" pl={6}>
                 24시간 접수 가능<br />
                 평일 18:00 이후 접수된 문의는<br />
                 다음 영업일에 답변드립니다.

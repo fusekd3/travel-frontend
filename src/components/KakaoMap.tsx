@@ -115,22 +115,16 @@ export default function KakaoMap({ spots, height = "400px" }: KakaoMapProps) {
                 });
 
                 // 마커 클릭 이벤트 (토글)
-                let isOpen = false;
                 window.kakao.maps.event.addListener(marker, 'click', () => {
-                  if (isOpen) {
-                    // 이미 열려있으면 닫기
-                    infowindow.close();
-                    isOpen = false;
+                  if (openedMarker && openedMarker.marker === marker) {
+                    openedMarker.infowindow.close();
+                    setOpenedMarker(null);
                     setSelectedSpot(null);
                   } else {
-                    // 닫혀있으면 열기
-                    if (openedMarker) {
-                      openedMarker.infowindow.close();
-                    }
+                    if (openedMarker) openedMarker.infowindow.close();
                     infowindow.open(mapInstance, marker);
                     setOpenedMarker({ marker, infowindow });
                     setSelectedSpot(spot);
-                    isOpen = true;
                   }
                 });
 
